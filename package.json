@@ -1,0 +1,31 @@
+{
+  "name": "chatvoid-server",
+  "version": "1.0.0",
+  "description": "Backend service for chatvoid",
+  "main": "./dist/index.js",
+  "type": "commonjs",
+  "scripts": {
+    "build": "rimraf dist && npx tsc",
+    "testbuild": "rimraf dist && npx tsc",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node dist/index.js",
+    "preserve": "npm run build",
+    "serve": "tsc -w & nodemon dist/index.js"
+  },
+  "author": "Francis Onukwu",
+  "license": "ISC",
+  "dependencies": {
+    "@types/uuid": "^9.0.2",
+    "@types/ws": "^8.5.5",
+    "axios": "^1.4.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-ws": "^5.0.2",
+    "moment": "^2.29.4",
+    "nodemon": "^2.0.22",
+    "rimraf": "^5.0.1",
+    "typescript": "^5.1.6",
+    "uuid": "^9.0.0",
+    "ws": "^8.13.0"
+  }
+}
