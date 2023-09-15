@@ -1,6 +1,7 @@
 import { Data, WebSocket } from "ws";
 import { messagesDataType, usersType } from "./types";
 import moment from "moment";
+import { numberOfUsers } from "./message";
 
 export const users: usersType = {};
 export const messagesData: messagesDataType[] = [];
@@ -18,32 +19,51 @@ class User {
   }
 
   sendMessage(message: Data, ID: string) {
-    const receivedMessage = JSON.parse(message.toString()).message;
+    try {
+      const receivedMessage = JSON.parse(message.toString()).message;
 
-    messagesData.push({
-      message: receivedMessage,
-      time: moment(),
-      user: ID,
-    });
+      if (receivedMessage) {
+        messagesData.push({
+          message: receivedMessage,
+          time: moment(),
+          user: ID,
+        });
 
-    return { receivedMessage };
+        console.log("Received message: ", receivedMessage);
+        return { receivedMessage, ID };
+      } else {
+        console.log("Error");
+      }
+    } catch (err) {
+      console.log(err);
+      return { receivedMessage: "Invalid data" };
+    }
   }
 
   getNumberOfUsers() {
     return Object.keys(users).length;
   }
 
-  disconnect() {
+  disconnect(ID: string) {
+    delete users[ID];
     console.log(`Number of connected users: ${Object.keys(users).length}`);
+    broadcastMessage(numberOfUsers());
+    broadcastMessage(`${ID} left the chat`);
+  }
+}
 
-    for (let userID in users) {
-      const user = users[userID];
+export const broadcastMessage = (message: string, ID?: string) => {
+  for (let userID in users) {
+    const user = users[userID];
 
-      if (user.readyState === WebSocket.OPEN) {
-        user.send("Someone left the chat");
+    if (user.readyState === WebSocket.OPEN) {
+      if (ID) {
+        user.send(`${message} from ${ID}`);
+      } else {
+        user.send(message);
       }
     }
   }
-}
+};
 
 export default User;
