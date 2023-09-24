@@ -27,8 +27,8 @@ ws.on("connection", (res) => {
 
     if (response?.receivedMessage) {
       const receivedMessage = response.receivedMessage;
-      console.log(receivedMessage);
-      broadcastMessage(receivedMessage, ID);
+      console.log(receivedMessage, "received message");
+      toEveryoneExceptSender(ID, receivedMessage, "message");
     }
   };
 

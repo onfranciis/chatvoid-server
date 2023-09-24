@@ -1,4 +1,5 @@
 import { Data, WebSocket } from "ws";
+import { v4 as uuid } from "uuid";
 import { messagesDataType, usersType } from "./types";
 import moment from "moment";
 import { numberOfUsers } from "./message";
@@ -27,6 +28,7 @@ class User {
           message: receivedMessage,
           time: moment(),
           user: ID,
+          type: "message",
         });
 
         console.log("Received message: ", receivedMessage);
@@ -52,18 +54,26 @@ class User {
   }
 }
 
-export const broadcastMessage = (message: string, ID?: string) => {
-  for (let userID in users) {
-    const user = users[userID];
+export const broadcastMessage = (message: string | undefined, ID?: string) => {
+  if (typeof message == "string")
+    for (let userID in users) {
+      const user = users[userID];
 
-    if (user.readyState === WebSocket.OPEN) {
-      if (ID) {
-        user.send(`${message} from ${ID}`);
-      } else {
-        user.send(message);
+      if (user.readyState === WebSocket.OPEN) {
+        if (ID) {
+          user.send(
+            JSON.stringify({
+              user: ID,
+              key: uuid(),
+              message,
+              type: "message",
+            })
+          );
+        } else {
+          user.send(message);
+        }
       }
     }
-  }
 };
 
 export default User;

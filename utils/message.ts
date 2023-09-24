@@ -1,21 +1,31 @@
 import { WebSocket } from "ws";
 import { users } from "./user";
+import { v4 as uuid } from "uuid";
+import { messageType } from "./types";
 
 export const numberOfUsers = () => {
-  return JSON.stringify({
-    type: "no_of_users",
-    value: Object.keys(users).length,
-  });
+  try {
+    return JSON.stringify({
+      type: "users",
+      message: Object.keys(users),
+    });
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 export const toSender = (message: string) => {
   return JSON.stringify({
     type: "to_sender",
-    value: message,
+    message: message,
   });
 };
 
-export const toEveryoneExceptSender = (senderID: string) => {
+export const toEveryoneExceptSender = (
+  senderID: string,
+  message?: string,
+  type?: messageType
+) => {
   for (let userID in users) {
     const user = users[userID];
 
@@ -25,8 +35,10 @@ export const toEveryoneExceptSender = (senderID: string) => {
       } else {
         user.send(
           JSON.stringify({
-            type: "to_everyone",
-            value: `${senderID} has joined the chat`,
+            type: type || "notification",
+            message: message || `${senderID} has joined the chat`,
+            key: uuid(),
+            user: senderID,
           })
         );
       }
