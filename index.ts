@@ -1,7 +1,12 @@
 import http from "http";
 import { WebSocketServer } from "ws";
 import { v4 as uuid } from "uuid";
-import User, { users } from "./utils/user";
+import User, { broadcastMessage, users } from "./utils/user";
+import {
+  numberOfUsers,
+  toEveryoneExceptSender,
+  toSender,
+} from "./utils/message";
 
 const PORT = process.env.PORT || 5050;
 const server = http.createServer();
@@ -12,18 +17,24 @@ ws.on("connection", (res) => {
   const client = new User(userId, res);
   const { ID, Details, getNumberOfUsers, sendMessage, disconnect } = client;
   console.log(`Received a new connection and connected user ${userId}`);
-  console.log(`Number of connected users: ${getNumberOfUsers()}`);
+  res.send(toSender("You're connected"));
+  toEveryoneExceptSender(ID);
+  broadcastMessage(numberOfUsers());
 
   res.onmessage = (message) => {
     const { data } = message;
-    const { receivedMessage } = sendMessage(data, ID);
-    console.log(receivedMessage);
+    const response = sendMessage(data, ID);
+
+    if (response?.receivedMessage) {
+      const receivedMessage = response.receivedMessage;
+      console.log(receivedMessage, "received message");
+      toEveryoneExceptSender(ID, receivedMessage, "message");
+    }
   };
 
   res.on("close", () => {
     console.log(`${ID} has disconnected`);
-    delete users[ID];
-    disconnect();
+    disconnect(ID);
   });
 });
 
