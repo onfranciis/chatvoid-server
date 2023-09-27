@@ -2,7 +2,7 @@ import { Data, WebSocket } from "ws";
 import { v4 as uuid } from "uuid";
 import { messagesDataType, usersType } from "./types";
 import moment from "moment";
-import { numberOfUsers } from "./message";
+import { numberOfUsers, toEveryoneExceptSender } from "./message";
 
 export const users: usersType = {};
 export const messagesData: messagesDataType[] = [];
@@ -50,7 +50,7 @@ class User {
     delete users[ID];
     console.log(`Number of connected users: ${Object.keys(users).length}`);
     broadcastMessage(numberOfUsers());
-    broadcastMessage(`${ID} left the chat`);
+    toEveryoneExceptSender(ID, `${ID} has left the chat`, "notification");
   }
 }
 
