@@ -6,7 +6,11 @@
 
 This repository contains the source code for a chatroom web socket built in TypeScript for a NodeJs server without socket\.io. A client can be found on https://github.com/onfranciis/chatvoid. Feel free to glance through this project and suggest changes via issues. Learn how this works [here](./LEARN.md)
 
+You can get my client at https://github.com/onfranciis/chatvoid
+
 Kindly give this repo a star :star:
+
+For enquiries, support or more, contact [hello@onfranciis.dev](mailto:hello@onfranciis.dev)
 
 ## Tools
 
