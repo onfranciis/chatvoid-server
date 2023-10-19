@@ -29,19 +29,15 @@ export const toEveryoneExceptSender = (
   for (let userID in users) {
     const user = users[userID];
 
-    if (user.readyState === WebSocket.OPEN) {
-      if (userID === senderID) {
-        // Same user
-      } else {
-        user.send(
-          JSON.stringify({
-            type: type || "notification",
-            message: message || `${senderID} has joined the chat`,
-            key: uuid(),
-            user: senderID,
-          })
-        );
-      }
+    if (user.readyState === WebSocket.OPEN && userID != senderID) {
+      user.send(
+        JSON.stringify({
+          type: type || "notification",
+          message: message || `${senderID} has joined the chat`,
+          key: uuid(),
+          user: senderID,
+        })
+      );
     }
   }
 };
